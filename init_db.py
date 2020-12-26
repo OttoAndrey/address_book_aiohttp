@@ -1,9 +1,7 @@
 from sqlalchemy import create_engine
 
 from db import Base
-from settings import config
-
-DSN = 'postgresql://{user}:{password}@{host}:{port}/{database}'
+from settings import config, DSN
 
 
 def create_tables(db_engine):
