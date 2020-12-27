@@ -1,14 +1,30 @@
 import enum
 
+import aiopg.sa
 from sqlalchemy import (
     Column, ForeignKey,
-    Integer, String, Date, Enum, Text,
+    Integer, String, Date, Enum, Text, MetaData, Table,
 )
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy_imageattach.entity import Image, image_attachment
 
 Base = declarative_base()
+
+
+async def init_pg(app):
+    conf = app['config']['postgres']
+    engine = await aiopg.sa.create_engine(
+        database=conf['database'],
+        user=conf['user'],
+        password=conf['password'],
+        host=conf['host'],
+        port=conf['port'],
+    )
+    app['db'] = engine
+
+
+async def close_pg(app):
+    app['db'].close()
+    await app['db'].wait_closed()
 
 
 class SexEnum(enum.Enum):
@@ -26,37 +42,29 @@ class EmailEnum(enum.Enum):
     work = 'work'
 
 
-class User(Base):
-    __tablename__ = 'user'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    full_name = Column(String(255), nullable=False)
-    image = image_attachment('UserImage')
-    sex = Column(Enum(SexEnum), nullable=False)
-    birthdate = Column(Date, nullable=False)
-    living_address = Column(Text, nullable=False)
+meta = MetaData()
 
-    images = relationship('UserImage', backref='user')
-    phones = relationship('Phone', backref='user')
-    emails = relationship('Email', backref='user')
+user = Table(
+    'user', meta,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('full_name', String(255), nullable=False),
+    Column('sex', Enum(SexEnum), nullable=False),
+    Column('birthdate', Date, nullable=False),
+    Column('living_address', Text, nullable=False),
+)
 
+email = Table(
+    'email', meta,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('type', Enum(EmailEnum), nullable=False),
+    Column('address', String(254), nullable=False),
+    Column('user_id', Integer, ForeignKey('user.id', ondelete='CASCADE')),
+)
 
-class UserImage(Base, Image):
-    __tablename__ = 'user_image'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-
-
-class Phone(Base):
-    __tablename__ = 'phone'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(Enum(PhoneEnum), nullable=False)
-    number = Column(String(11), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
-
-
-class Email(Base):
-    __tablename__ = 'email'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(Enum(EmailEnum), nullable=False)
-    email = Column(String(254), nullable=False)
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
+phone = Table(
+    'phone', meta,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('type', Enum(PhoneEnum), nullable=False),
+    Column('number', String(11), nullable=False),
+    Column('user_id', Integer, ForeignKey('user.id', ondelete='CASCADE')),
+)
