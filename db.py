@@ -5,26 +5,6 @@ from sqlalchemy import (
     Column, ForeignKey,
     Integer, String, Date, Enum, Text, MetaData, Table,
 )
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
-
-
-async def init_pg(app):
-    conf = app['config']['postgres']
-    engine = await aiopg.sa.create_engine(
-        database=conf['database'],
-        user=conf['user'],
-        password=conf['password'],
-        host=conf['host'],
-        port=conf['port'],
-    )
-    app['db'] = engine
-
-
-async def close_pg(app):
-    app['db'].close()
-    await app['db'].wait_closed()
 
 
 class SexEnum(enum.Enum):
@@ -68,3 +48,20 @@ phone = Table(
     Column('number', String(11), nullable=False),
     Column('user_id', Integer, ForeignKey('user.id', ondelete='CASCADE')),
 )
+
+
+async def init_pg(app):
+    conf = app['config']['postgres']
+    engine = await aiopg.sa.create_engine(
+        database=conf['database'],
+        user=conf['user'],
+        password=conf['password'],
+        host=conf['host'],
+        port=conf['port'],
+    )
+    app['db'] = engine
+
+
+async def close_pg(app):
+    app['db'].close()
+    await app['db'].wait_closed()

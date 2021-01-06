@@ -1,11 +1,12 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 
-from db import Base
+from db import email, phone, user
 from settings import config, DSN
 
 
 def create_tables(db_engine):
-    Base.metadata.create_all(db_engine, Base.metadata.tables.values(), checkfirst=True)
+    meta = MetaData()
+    meta.create_all(bind=db_engine, tables=[user, email, phone])
 
 
 if __name__ == '__main__':
