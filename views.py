@@ -1,6 +1,9 @@
 from aiohttp import web
-from serializers import *
+from aiohttp_validate import validate
+
 import db
+from schema import PHONE_UPDATE_REQUEST_SCHEMA
+from serializers import *
 
 
 async def index(request):
@@ -132,9 +135,9 @@ async def update_email(request):
         return web.json_response(email, status=200)
 
 
-async def update_phone(request):
+@validate(request_schema=PHONE_UPDATE_REQUEST_SCHEMA)
+async def update_phone(data, request):
     async with request.app['db'].acquire() as conn:
-        data = await request.post()
         phone_id = request.match_info['phone_id']
         result = await conn.execute(db.phone.update()
                                     .returning(*db.phone.c)
