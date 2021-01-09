@@ -12,7 +12,7 @@ def serialize_user(user):
 def serialize_email(email):
     return{
         'id': email.id,
-        'email': email.address,
+        'address': email.address,
         'type': email.type.value,
         'user_id': email.user_id,
     }
