@@ -2,7 +2,8 @@ from aiohttp import web
 from aiohttp_validate import validate
 
 import db
-from schema import PHONE_UPDATE_REQUEST_SCHEMA
+from schema import UPDATE_PHONE_REQUEST_SCHEMA, UPDATE_EMAIL_REQUEST_SCHEMA, UPDATE_USER_REQUEST_SCHEMA,\
+    CREATE_PHONE_REQUEST_SCHEMA, CREATE_EMAIL_REQUEST_SCHEMA, CREATE_USER_REQUEST_SCHEMA
 from serializers import *
 
 
@@ -41,8 +42,8 @@ async def get_phones_list(request):
         return web.json_response(context, status=200)
 
 
-async def create_email(request):
-    data = await request.post()
+@validate(request_schema=CREATE_EMAIL_REQUEST_SCHEMA)
+async def create_email(data, request):
     email_obj = {
         'address': data['address'],
         'type': data['type'],
@@ -53,8 +54,8 @@ async def create_email(request):
         return web.json_response(email_obj, status=201)
 
 
-async def create_phone(request):
-    data = await request.post()
+@validate(request_schema=CREATE_PHONE_REQUEST_SCHEMA)
+async def create_phone(data, request):
     phone_obj = {
         'number': data['number'],
         'type': data['type'],
@@ -65,14 +66,14 @@ async def create_phone(request):
         return web.json_response(phone_obj, status=201)
 
 
-async def create_user(request):
+@validate(request_schema=CREATE_USER_REQUEST_SCHEMA)
+async def create_user(data, request):
     context = {}
-    data = await request.post()
     user_obj = {
-        'full_name': data['full_name'],
-        'sex': data['sex'],
-        'birthdate': data['birthdate'],
-        'living_address': data['living_address'],
+        'full_name': data['user']['full_name'],
+        'sex': data['user']['sex'],
+        'birthdate': data['user']['birthdate'],
+        'living_address': data['user']['living_address'],
     }
 
     async with request.app['db'].acquire() as conn:
@@ -82,10 +83,10 @@ async def create_user(request):
         user_obj['id'] = user_id
         context['user'] = user_obj
 
-        if 'number' in data:
+        if 'phone' in data.keys():
             phone_obj = {
-                'number': data['number'],
-                'type': data['phone_type'],
+                'number': data['phone']['number'],
+                'type': data['phone']['type'],
                 'user_id': user_obj['id'],
             }
             inserted_phone = await conn.execute(db.phone.insert().values(phone_obj))
@@ -94,10 +95,10 @@ async def create_user(request):
             phone_obj['id'] = phone_id
             context['phone'] = phone_obj
 
-        if 'address' in data:
+        if 'email' in data.keys():
             email_obj = {
-                'address': data['address'],
-                'type': data['email_type'],
+                'address': data['email']['address'],
+                'type': data['email']['type'],
                 'user_id': user_obj['id'],
             }
             inserted_email = await conn.execute(db.email.insert().values(email_obj))
@@ -109,9 +110,9 @@ async def create_user(request):
         return web.json_response(context, status=201)
 
 
-async def update_user(request):
+@validate(request_schema=UPDATE_USER_REQUEST_SCHEMA)
+async def update_user(data, request):
     async with request.app['db'].acquire() as conn:
-        data = await request.post()
         user_id = request.match_info['user_id']
         result = await conn.execute(db.user.update()
                                     .returning(*db.user.c)
@@ -122,9 +123,9 @@ async def update_user(request):
         return web.json_response(user, status=200)
 
 
-async def update_email(request):
+@validate(request_schema=UPDATE_EMAIL_REQUEST_SCHEMA)
+async def update_email(data, request):
     async with request.app['db'].acquire() as conn:
-        data = await request.post()
         email_id = request.match_info['email_id']
         result = await conn.execute(db.email.update()
                                     .returning(*db.email.c)
@@ -135,7 +136,7 @@ async def update_email(request):
         return web.json_response(email, status=200)
 
 
-@validate(request_schema=PHONE_UPDATE_REQUEST_SCHEMA)
+@validate(request_schema=UPDATE_PHONE_REQUEST_SCHEMA)
 async def update_phone(data, request):
     async with request.app['db'].acquire() as conn:
         phone_id = request.match_info['phone_id']
