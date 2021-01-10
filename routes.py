@@ -8,6 +8,10 @@ def setup_routes(app):
     app.router.add_post('/emails/list', get_emails_list, name='emails')
     app.router.add_post('/phones/list', get_phones_list, name='phones')
 
+    app.router.add_post('/users/{user_id}', get_user_detail, name='user')
+    app.router.add_post('/emails/{email_id}', get_email_detail, name='email')
+    app.router.add_post('/phones/{phone_id}', get_phone_detail, name='phone')
+
     app.router.add_put('/users/create', create_user, name='create-user')
     app.router.add_put('/emails/create', create_email, name='create-email')
     app.router.add_put('/phones/create', create_phone, name='create-phone')

@@ -13,6 +13,33 @@ async def index(request):
     return web.json_response(response_obj)
 
 
+async def get_user_detail(request):
+    async with request.app['db'].acquire() as conn:
+        user_id = request.match_info['user_id']
+        result = await conn.execute(db.user.select(db.user.c.id == user_id))
+        user_record = await result.fetchone()
+        user = serialize_user(user_record)
+        return web.json_response(user, status=200)
+
+
+async def get_email_detail(request):
+    async with request.app['db'].acquire() as conn:
+        email_id = request.match_info['email_id']
+        result = await conn.execute(db.email.select(db.email.c.id == email_id))
+        email_record = await result.fetchone()
+        email = serialize_email(email_record)
+        return web.json_response(email, status=200)
+
+
+async def get_phone_detail(request):
+    async with request.app['db'].acquire() as conn:
+        phone_id = request.match_info['phone_id']
+        result = await conn.execute(db.phone.select(db.phone.c.id == phone_id))
+        phone_record = await result.fetchone()
+        phone = serialize_phone(phone_record)
+        return web.json_response(phone, status=200)
+
+
 async def get_users_list(request):
     async with request.app['db'].acquire() as conn:
         if 'sort' in request.rel_url.query.keys():
