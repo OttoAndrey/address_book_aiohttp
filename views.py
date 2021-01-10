@@ -8,11 +8,6 @@ from schema import UPDATE_PHONE_REQUEST_SCHEMA, UPDATE_EMAIL_REQUEST_SCHEMA, UPD
 from serializers import *
 
 
-async def index(request):
-    response_obj = {'status': 'success'}
-    return web.json_response(response_obj)
-
-
 async def get_user_detail(request):
     async with request.app['db'].acquire() as conn:
         user_id = request.match_info['user_id']
