@@ -1,5 +1,6 @@
 from aiohttp import web
 from aiohttp_validate import validate
+from sqlalchemy import desc
 
 import db
 from schema import UPDATE_PHONE_REQUEST_SCHEMA, UPDATE_EMAIL_REQUEST_SCHEMA, UPDATE_USER_REQUEST_SCHEMA,\
@@ -14,7 +15,15 @@ async def index(request):
 
 async def get_users_list(request):
     async with request.app['db'].acquire() as conn:
-        cursor = await conn.execute(db.user.select())
+        if 'sort' in request.rel_url.query.keys():
+            sort_param = request.rel_url.query['sort']
+            if '-' in sort_param:
+                sort_param = sort_param[1:]
+                cursor = await conn.execute(db.user.select().order_by(desc(sort_param)))
+            else:
+                cursor = await conn.execute(db.user.select().order_by(sort_param))
+        else:
+            cursor = await conn.execute(db.user.select())
         records = await cursor.fetchall()
         context = {
             'users': [serialize_user(record) for record in records]
@@ -24,7 +33,15 @@ async def get_users_list(request):
 
 async def get_emails_list(request):
     async with request.app['db'].acquire() as conn:
-        cursor = await conn.execute(db.email.select())
+        if 'sort' in request.rel_url.query.keys():
+            sort_param = request.rel_url.query['sort']
+            if '-' in sort_param:
+                sort_param = sort_param[1:]
+                cursor = await conn.execute(db.email.select().order_by(desc(sort_param)))
+            else:
+                cursor = await conn.execute(db.email.select().order_by(sort_param))
+        else:
+            cursor = await conn.execute(db.email.select())
         records = await cursor.fetchall()
         context = {
             'emails': [serialize_email(record) for record in records]
@@ -34,7 +51,15 @@ async def get_emails_list(request):
 
 async def get_phones_list(request):
     async with request.app['db'].acquire() as conn:
-        cursor = await conn.execute(db.phone.select())
+        if 'sort' in request.rel_url.query.keys():
+            sort_param = request.rel_url.query['sort']
+            if '-' in sort_param:
+                sort_param = sort_param[1:]
+                cursor = await conn.execute(db.phone.select().order_by(desc(sort_param)))
+            else:
+                cursor = await conn.execute(db.phone.select().order_by(sort_param))
+        else:
+            cursor = await conn.execute(db.phone.select())
         records = await cursor.fetchall()
         context = {
             'phones': [serialize_phone(record) for record in records]
