@@ -1,12 +1,8 @@
-import asyncio
-
 from aiohttp import web
 
 from db import close_pg, init_pg
 from routes import setup_routes
 from settings import config
-
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 app = web.Application()
 app['config'] = config
