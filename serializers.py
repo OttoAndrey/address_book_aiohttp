@@ -6,6 +6,7 @@ def serialize_user(user):
         'sex': user.sex.value,
         'birthdate': str(user.birthdate),
         'living_address': user.living_address,
+        'avatar_url': user.avatar_url,
     }
 
 

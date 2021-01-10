@@ -62,6 +62,9 @@ CREATE_USER_REQUEST_SCHEMA = {
                 "living_address": {
                     "type": "string",
                 },
+                "avatar_url": {
+                    "type": "string",
+                }
             },
             "required": ["full_name", "sex", "birthdate", "living_address"]
         },
@@ -177,6 +180,9 @@ UPDATE_USER_REQUEST_SCHEMA = {
         "living_address": {
             "type": "string",
         },
+        "avatar_url": {
+            "type": "string",
+        }
     },
     "anyOf": [{
         "required": ["full_name"]
@@ -189,5 +195,8 @@ UPDATE_USER_REQUEST_SCHEMA = {
         },
         {
             "required": ["living_address"]
+        },
+        {
+            "required": ["avatar_url"]
         }]
 }

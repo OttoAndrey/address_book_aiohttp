@@ -26,11 +26,12 @@ meta = MetaData()
 
 user = Table(
     'user', meta,
-    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('id', Integer, primary_key=True, autoincrement=True, index=True),
     Column('full_name', String(255), nullable=False),
     Column('sex', Enum(SexEnum), nullable=False),
     Column('birthdate', Date, nullable=False),
     Column('living_address', Text, nullable=False),
+    Column('avatar_url', Text)
 )
 
 email = Table(

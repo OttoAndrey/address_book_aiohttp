@@ -22,7 +22,8 @@ def fill_db(db_engine):
         new_user = user.insert().values(full_name=profile['name'],
                                         sex=sex,
                                         birthdate=profile['birthdate'],
-                                        living_address=profile['address'])
+                                        living_address=profile['address'],
+                                        avatar_url=fake.image_url(),)
         conn.execute(new_user)
 
         all_users = conn.execute(user.select().order_by(user.c.id.desc()).limit(1))

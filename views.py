@@ -116,12 +116,7 @@ async def create_phone(data, request):
 @validate(request_schema=CREATE_USER_REQUEST_SCHEMA)
 async def create_user(data, request):
     context = {}
-    user_obj = {
-        'full_name': data['user']['full_name'],
-        'sex': data['user']['sex'],
-        'birthdate': data['user']['birthdate'],
-        'living_address': data['user']['living_address'],
-    }
+    user_obj = data['user']
 
     async with request.app['db'].acquire() as conn:
         inserted_user = await conn.execute(db.user.insert().values(user_obj))
