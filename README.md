@@ -55,12 +55,17 @@ _Электронные адреса:_
 
 Заполните файл `config.yaml` следующим образом:
 
-`postgres:
-  database: название БД
-  user: название пользователя
-  password: пароль
-  host: localhost
-  port: 5432`
+`postgres:`
+  
+  `database: название БД`
+
+  `user: название пользователя`
+
+  `password: пароль`
+
+  `host: localhost`
+
+  `port: 5432`
   
 Создайте таблицы для БД:
 
@@ -77,10 +82,26 @@ _Электронные адреса:_
 Локально API будет по адресу: [http://127.0.0.1:8000/](http://127.0.0.1:8000/) 
 
 
+## Сортировка
+
+При list запросах можно добавить параметр `sort` для сортировки. Например:
+
+ `/users/list?sort=fullname`
+
+Для сортирвоки в обратно порядке нужно добавить `-` в начало параметра. Например:
+
+`/emails/list?sort=-type`
+
+
 ## Используемые библиотеки
 
-* [Faker](https://pypi.org/project/Faker/) - для наполнения БД данными.
-* [psycopg2](https://pypi.org/project/psycopg2/) - для работы с PostgreSQL.
+* [aiohttp](https://pypi.org/project/aiohttp/) - асинхронное http.
+* [aiohttp_validate](https://pypi.org/project/aiohttp_validate/) - валидация запросов.
+* [aiopg](https://pypi.org/project/aiopg/) - асинхронная работа с PostgreSQL.
+* [Faker](https://pypi.org/project/Faker/) - наполнение БД данными.
+* [psycopg2-binary](https://pypi.org/project/psycopg2-binary/) - для работы с PostgreSQL.
+* [PyYAML](https://pypi.org/project/PyYAML/) - для работы с `.yaml` файлами.
+* [SQLAlchemy](https://pypi.org/project/SQLAlchemy/) - для работы с БД.
 
 
 ## Цели проекта
