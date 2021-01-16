@@ -55,18 +55,15 @@ _Электронные адреса:_
 
 Заполните файл `config.yaml` следующим образом:
 
-`postgres:`
-  
-  `database: название БД`
+```yaml
+postgres:
+  database: название БД
+  user: название пользователя
+  password: пароль
+  host: localhost
+  port: 5432
+```
 
-  `user: название пользователя`
-
-  `password: пароль`
-
-  `host: localhost`
-
-  `port: 5432`
-  
 Создайте таблицы для БД:
 
 `python3 init_db.py`
